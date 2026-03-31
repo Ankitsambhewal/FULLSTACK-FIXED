@@ -1,0 +1,92 @@
+<%- include('partials/header') %>
+
+<main class="bg-[#F8F9FD] min-h-screen py-10">
+    <div class="container mx-auto px-6">
+        
+        <% if (locals.activeOrder) { %>
+            <div class="bg-white p-6 rounded-[2.5rem] flex justify-between items-center mb-10 shadow-sm border border-slate-50">
+                <div class="flex items-center gap-4">
+                    <div class="bg-green-100 text-green-600 p-2 rounded-lg text-xl">✅</div>
+                    <div>
+                        <p class="text-[10px] font-black uppercase text-slate-400">Latest Order Status</p>
+                        <p class="font-black text-slate-900">Your order is <%= activeOrder.status %>!</p>
+                    </div>
+                </div>
+                <span class="bg-green-100 text-green-600 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest">
+                    • <%= activeOrder.status %>
+                </span>
+            </div>
+        <% } %>
+
+        <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-4">Quick Re-order ⚡</p>
+        <div class="flex gap-4 mb-10 overflow-x-auto pb-4">
+            <div class="bg-white p-4 rounded-3xl flex items-center gap-4 min-w-[250px] shadow-sm border border-slate-50">
+                <div class="bg-slate-100 p-3 rounded-2xl text-xl">☕</div>
+                <div>
+                    <p class="text-xs font-bold text-slate-800">Rasmalai, Gulab Jam...</p>
+                    <p class="text-[10px] font-black text-[#6C63A0] uppercase">Re-order for ₹260</p>
+                </div>
+            </div>
+            </div>
+
+        <div class="flex justify-between items-center mb-10">
+            <div class="flex gap-3">
+                <button class="bg-[#6C63A0] text-white px-6 py-2 rounded-full text-xs font-bold">All</button>
+                <button class="bg-white text-slate-500 px-6 py-2 rounded-full text-xs font-bold shadow-sm">Breakfast</button>
+                <button class="bg-white text-slate-500 px-6 py-2 rounded-full text-xs font-bold shadow-sm">Lunch</button>
+            </div>
+            <div class="bg-white px-4 py-2 rounded-full shadow-sm flex gap-4 text-[10px] font-black uppercase">
+                <span class="text-slate-900">All</span>
+                <span class="text-green-500">Veg ●</span>
+                <span class="text-red-500">Non-Veg ●</span>
+            </div>
+        </div>
+
+        <h1 class="text-4xl font-black text-slate-900 italic mb-10">Premium flavors in every bite.</h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <% products.forEach(product => { %>
+                <div class="bg-white rounded-[2.5rem] p-4 shadow-sm border border-transparent hover:shadow-xl transition-all duration-300 group">
+                    <div class="relative h-64 mb-6 overflow-hidden rounded-[2rem]">
+                        <span class="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-lg text-[10px] font-bold text-slate-500 z-10 uppercase">
+                            <%= product.category %>
+                        </span>
+                        <img src="<%= product.image %>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    </div>
+
+                    <div class="px-2">
+                        <h3 class="text-xl font-black text-slate-800 leading-tight mb-1"><%= product.name %></h3>
+                        <p class="text-2xl font-black text-slate-900 mb-6">₹<%= product.price %></p>
+                        
+                        <button 
+                            data-product='<%= JSON.stringify(product) %>'
+                            class="add-to-cart-btn w-full bg-[#0F172A] text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#6C63A0] transition-colors flex items-center justify-center gap-2">
+                            ADD TO TRAY +
+                        </button>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+</main>
+
+<script>
+document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const product = JSON.parse(btn.getAttribute('data-product'));
+        fetch('/add-to-cart', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(product)
+        })
+        .then(res => res.json())
+        .then(data => {
+            const counter = document.querySelector('#cartCounter');
+            if(counter) counter.innerText = data.totalQty;
+            alert(product.name + " 🍔");
+        });
+    });
+});
+</script>
+
+<%- include('partials/footer') %>

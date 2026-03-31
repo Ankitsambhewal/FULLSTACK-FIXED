@@ -1,0 +1,122 @@
+<style>
+* { box-sizing: border-box; }
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #1f1f1f, #2c2c2c);
+    padding: 14px 30px;
+    color: white;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+.navbar-brand { font-size: 22px; font-weight: 700; color: #ffc107; text-decoration: none; }
+.navbar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.nav-btn {
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.btn-menu   { background: linear-gradient(135deg, #ff9800, #ff5722); font-weight: 700; }
+.btn-menu:hover { transform: translateY(-2px); box-shadow: 0 5px 12px rgba(255,87,34,0.4); }
+.btn-cart   { background: #2563eb; }
+.btn-cart:hover { background: #1d4ed8; }
+.btn-order  { background: #059669; }
+.btn-order:hover { background: #047857; }
+.btn-login  { background: #2563eb; }
+.btn-login:hover { background: #1d4ed8; }
+.btn-signup { background: #7c3aed; }
+.btn-signup:hover { background: #6d28d9; }
+.btn-logout { background: #dc2626; }
+.btn-logout:hover { background: #b91c1c; }
+.btn-admin  { background: #d97706; }
+.btn-admin:hover { background: #b45309; }
+.cart-count {
+    background: #ff1744;
+    color: white;
+    padding: 2px 7px;
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 800;
+    min-width: 20px;
+    text-align: center;
+}
+.welcome-text { font-weight: 600; color: #ffc107; font-size: 14px; }
+@media (max-width: 768px) {
+    .navbar { flex-direction: column; gap: 12px; padding: 12px 16px; }
+    .navbar-right { justify-content: center; }
+}
+</style>
+
+<nav class="navbar">
+    <a href="/products" class="navbar-brand">🍽️ Food Store</a>
+    <div class="navbar-right">
+        <a href="/products" class="nav-btn btn-menu">Menu</a>
+
+        <a href="javascript:void(0)" onclick="goToCart()" class="nav-btn btn-cart">
+            Cart 🛒 <span id="cartCount" class="cart-count">0</span>
+        </a>
+
+        <% if (typeof user !== 'undefined' && user && user.name) { %>
+            <a href="/orders" class="nav-btn btn-order">My Orders</a>
+            <% if (user.role === 'admin') { %>
+                <a href="/admin" class="nav-btn btn-admin">⚙️ Admin</a>
+            <% } %>
+            <span class="welcome-text">👋 <%= user.name %></span>
+            <button class="nav-btn btn-logout" id="logoutBtn">Logout</button>
+        <% } else { %>
+            <a href="/login"  class="nav-btn btn-login">Login</a>
+            <a href="/signup" class="nav-btn btn-signup">Signup</a>
+        <% } %>
+    </div>
+</nav>
+
+<script>
+function updateCartCount() {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const total = cart.reduce((t, i) => t + i.quantity, 0);
+    const el = document.getElementById("cartCount");
+    if (el) el.innerText = total;
+}
+
+function goToCart() {
+    const user = <%- JSON.stringify((typeof user !== 'undefined' ? user : null)) %>;
+    if (!user) {
+        localStorage.setItem("redirectAfterLogin", "/cart");
+        window.location.href = "/login?redirect=cart";
+        return;
+    }
+    window.location.href = "/cart";
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    updateCartCount();
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", async () => {
+            try {
+                const res  = await fetch("/logout", { method: "POST" });
+                const data = await res.json();
+                if (data.success) {
+                    localStorage.removeItem("cart");
+                    window.location.href = data.redirect || "/login";
+                }
+            } catch (err) {
+                alert("Logout failed!");
+            }
+        });
+    }
+});
+</script>

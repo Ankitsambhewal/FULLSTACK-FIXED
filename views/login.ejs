@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Food Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+
+<div class="bg-white rounded-2xl shadow-md p-8 w-full max-w-md">
+
+    <div class="text-center mb-6">
+        <div class="text-4xl mb-2">🍽️</div>
+        <h1 class="text-2xl font-bold text-gray-800">Welcome Back!</h1>
+        <p class="text-gray-500 text-sm mt-1">Login to your account</p>
+    </div>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+        <div class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm mb-5">
+            ⚠️ <%= error %>
+        </div>
+    <% } %>
+
+    <form action="/login" method="POST" class="space-y-4">
+        <input type="hidden" name="redirect" value="<%= typeof redirect !== 'undefined' ? redirect : '' %>">
+
+        <div>
+            <label class="block text-sm font-semibold text-gray-600 mb-1">Email Address</label>
+            <input type="email" name="email" placeholder="your@email.com" required
+                class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition">
+        </div>
+
+        <div>
+            <label class="block text-sm font-semibold text-gray-600 mb-1">Password</label>
+            <input type="password" name="password" placeholder="Enter your password" required
+                class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition">
+        </div>
+
+        <button type="submit"
+            class="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-bold text-base transition mt-2">
+            Login
+        </button>
+    </form>
+
+    <p class="text-center text-sm text-gray-500 mt-5">
+        Don't have an account?
+        <a href="/signup" class="text-orange-500 font-bold hover:underline">Sign up now</a>
+    </p>
+</div>
+
+</body>
+</html>
